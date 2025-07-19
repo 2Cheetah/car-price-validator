@@ -1,0 +1,1 @@
+FROM 2cheetah/golang-custom:latest
