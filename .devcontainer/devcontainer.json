@@ -6,7 +6,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"golang.go"
+				"golang.go",
+				"yzhang.markdown-all-in-one"
 			]
 		}
 	}
