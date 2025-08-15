@@ -32,7 +32,7 @@ func (s Server) RegisterHandlers() {
 	s.Mux.HandleFunc("GET /bars", LoggerMiddleware(BarsHandler))
 }
 
-func (s Server) Run() {
+func (s Server) MustRun() {
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
 	go func() {

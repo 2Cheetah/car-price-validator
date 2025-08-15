@@ -11,16 +11,16 @@ import (
 )
 
 func main() {
-	LoadEnv()
+	MustLoadEnv()
 
 	SetupLogger()
 
 	s := server.NewServer()
 	s.RegisterHandlers()
-	s.Run()
+	s.MustRun()
 }
 
-func LoadEnv() {
+func MustLoadEnv() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("couldn't load env variables from .env file")
 	}
