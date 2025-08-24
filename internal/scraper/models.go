@@ -2,10 +2,16 @@ package scraper
 
 type Root struct {
 	Data []Ad `json:"data"`
+	Meta Meta `json:"meta"`
 }
 
 type Ad struct {
 	Attributes Attributes `json:"attributes"`
+}
+
+type Meta struct {
+	TotalResults int `json:"total-results"`
+	TotalShowing int `json:"total-showing"`
 }
 
 type Attributes struct {

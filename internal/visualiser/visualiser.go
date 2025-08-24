@@ -33,7 +33,7 @@ func RenderHTML(make string, model string, year string) ([]byte, error) {
 	}
 
 	// get prices
-	prices, err := scraper.GetPrices(make, model, year)
+	prices, err := scraper.GetAllPrices(make, model, year)
 	if err != nil {
 		slog.Error("error while trying to get prices", "error", err)
 		return []byte{}, fmt.Errorf("couldn't render HTML - no prices fetched, error: %w", err)
