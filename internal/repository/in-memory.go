@@ -78,7 +78,7 @@ func GetCarMakes() ([]string, error) {
 }
 
 func GetCarMakesData(data Data) map[string]string {
-	makeData := make(map[string]string, 0)
+	makeData := make(map[string]string)
 	for _, parent := range data.Attributes.Make.Values {
 		carMake := strings.ToLower(parent.Name)
 		makeData[carMake] = parent.ID
@@ -137,6 +137,7 @@ func GetModelIDbyModelName(makeName string, modelName string) (string, error) {
 
 	makeData := GetCarMakesData(data)
 	makeName = strings.ToLower(makeName)
+	modelName = strings.ToLower(modelName)
 	makeID, ok := makeData[makeName]
 	if !ok {
 		return "", fmt.Errorf("make %q not found", makeName)
