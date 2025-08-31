@@ -5,9 +5,11 @@ import (
 	"log/slog"
 	"slices"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/2Cheetah/car-price-validator/internal/domain"
+	"github.com/2Cheetah/car-price-validator/internal/repository"
 	"github.com/2Cheetah/car-price-validator/internal/scraper"
 	"github.com/2Cheetah/car-price-validator/internal/statistics"
 	"github.com/go-echarts/go-echarts/v2/charts"
@@ -24,7 +26,7 @@ func RenderHTML(make string, model string, year string) ([]byte, error) {
 		return []byte{}, err
 	}
 
-	if err := ValidateModel(model); err != nil {
+	if err := ValidateModel(make, model); err != nil {
 		return []byte{}, err
 	}
 
@@ -65,24 +67,28 @@ func RenderHTML(make string, model string, year string) ([]byte, error) {
 }
 
 func ValidateMake(make string) error {
-	// TODO: get supported car makes
-	carMakes := []string{
-		"vw",
-		"skoda",
+	carMakes, err := repository.GetCarMakes()
+	if err != nil {
+		return fmt.Errorf("couldn't get car makes, error: %w", err)
 	}
-	if !slices.Contains(carMakes, make) {
+
+	carMake := strings.ToLower(make)
+	if !slices.Contains(carMakes, carMake) {
+		slog.Debug("make is not in carMakes", "make", carMake)
 		return fmt.Errorf("unsupported car make")
 	}
 	return nil
 }
 
-func ValidateModel(model string) error {
-	// TODO: get supported car makes
-	carModel := []string{
-		"passat",
-		"polo",
+func ValidateModel(make string, model string) error {
+	carModels, err := repository.GetCarModelsByMake(make)
+	if err != nil {
+		return fmt.Errorf("couldn't get car models by make, error: %w", err)
 	}
-	if !slices.Contains(carModel, model) {
+
+	model = strings.ToLower(model)
+	if !slices.Contains(carModels, model) {
+		slog.Debug("requested model is not in carModels", "model", model)
 		return fmt.Errorf("unsupported car model")
 	}
 	return nil
