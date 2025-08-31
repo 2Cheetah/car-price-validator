@@ -113,3 +113,47 @@ func GetCarModelsByMake(makeName string) ([]string, error) {
 
 	return []string{}, fmt.Errorf("no car models found for that make")
 }
+
+func GetMakeIDbyMakeName(makeName string) (string, error) {
+	data, err := ReadData("./.temp/filters.json")
+	if err != nil {
+		return "", fmt.Errorf("couldn't get data, error: %w", err)
+	}
+
+	makeData := GetCarMakesData(data)
+	makeName = strings.ToLower(makeName)
+	makeID, ok := makeData[makeName]
+	if !ok {
+		return "", fmt.Errorf("make %q not found", makeName)
+	}
+	return makeID, nil
+}
+
+func GetModelIDbyModelName(makeName string, modelName string) (string, error) {
+	data, err := ReadData("./.temp/filters.json")
+	if err != nil {
+		return "", fmt.Errorf("couldn't get data, error: %w", err)
+	}
+
+	makeData := GetCarMakesData(data)
+	makeName = strings.ToLower(makeName)
+	makeID, ok := makeData[makeName]
+	if !ok {
+		return "", fmt.Errorf("make %q not found", makeName)
+	}
+
+	for _, parent := range data.Attributes.Model.Values {
+		if parent.ParentID != makeID {
+			continue
+		}
+		for _, model := range parent.Values {
+			carModel := strings.ToLower(model.Name)
+			if carModel != modelName {
+				continue
+			}
+			return model.ID, nil
+		}
+	}
+
+	return "", fmt.Errorf("no car model id found for that model name")
+}

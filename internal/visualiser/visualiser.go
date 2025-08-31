@@ -21,7 +21,6 @@ const (
 )
 
 func RenderHTML(make string, model string, year string) ([]byte, error) {
-	// validate input params
 	if err := ValidateMake(make); err != nil {
 		return []byte{}, err
 	}

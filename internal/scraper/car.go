@@ -9,6 +9,8 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+
+	"github.com/2Cheetah/car-price-validator/internal/repository"
 )
 
 const (
@@ -29,10 +31,20 @@ func GetPageData(page int, make string, model string, year string) (Root, error)
 	params.Set("from", strconv.Itoa(from))
 	params.Set("include", "extra_images,body")
 	params.Set("limit", strconv.Itoa(PerPage))
-	params.Set("make_id", "36")
+
+	makeID, err := repository.GetMakeIDbyMakeName(make)
+	if err != nil {
+		return Root{}, fmt.Errorf("couldn't get make ID by make name, error: %w", err)
+	}
+	params.Set("make_id", makeID)
 	params.Set("mfg_year", fmt.Sprintf("%s-%s", year, year))
 	params.Set("mileage", "-100000")
-	params.Set("model_id", "1756")
+
+	modelID, err := repository.GetModelIDbyModelName(make, model)
+	if err != nil {
+		return Root{}, fmt.Errorf("couldn't get model ID by model name, error: %w", err)
+	}
+	params.Set("model_id", modelID)
 	params.Set("price", "-100000")
 	params.Set("type", "sell")
 	base.RawQuery = params.Encode()
