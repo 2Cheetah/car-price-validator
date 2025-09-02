@@ -8,13 +8,14 @@ import (
 )
 
 func TestPingHandler(t *testing.T) {
-	http.HandleFunc("GET /ping", PingHandler)
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /ping", PingHandler)
 	respRecorder := httptest.NewRecorder()
 	req, err := http.NewRequest(http.MethodGet, "/ping", nil)
 	if err != nil {
 		t.Fatalf("couldn't create a GET request to /ping endpoint, error: %v+", err)
 	}
-	http.DefaultServeMux.ServeHTTP(respRecorder, req)
+	mux.ServeHTTP(respRecorder, req)
 
 	if respRecorder.Code != http.StatusOK {
 		t.Error("response http code is not 200")
