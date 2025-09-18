@@ -12,24 +12,27 @@ import (
 )
 
 type Server struct {
-	Mux    *http.ServeMux
-	Server *http.Server
+	Mux      *http.ServeMux
+	Server   *http.Server
+	Handlers *Handlers
 }
 
 func NewServer() Server {
 	mux := http.NewServeMux()
+	handlers := NewHandlers()
 	return Server{
 		Mux: mux,
 		Server: &http.Server{
 			Addr:    ":8080",
 			Handler: mux,
 		},
+		Handlers: handlers,
 	}
 }
 
 func (s Server) RegisterHandlers() {
-	s.Mux.HandleFunc("GET /ping", LoggerMiddleware(PingHandler))
-	s.Mux.HandleFunc("GET /bars", LoggerMiddleware(BarsHandler))
+	s.Mux.HandleFunc("GET /ping", LoggerMiddleware(s.Handlers.PingHandler))
+	s.Mux.HandleFunc("GET /bars", LoggerMiddleware(s.Handlers.BarsHandler))
 }
 
 func (s Server) MustRun() {

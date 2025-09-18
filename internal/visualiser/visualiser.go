@@ -20,7 +20,9 @@ const (
 	YearFirstCarProduced int = 1900
 )
 
-func RenderHTML(make string, model string, year string) ([]byte, error) {
+type Visualiser struct{}
+
+func (v *Visualiser) RenderHTML(make string, model string, year string) ([]byte, error) {
 	if err := ValidateMake(make); err != nil {
 		return []byte{}, err
 	}

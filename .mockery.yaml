@@ -1,0 +1,4 @@
+packages:
+    github.com/2Cheetah/car-price-validator/internal/server:
+        interfaces:
+            Renderer:
