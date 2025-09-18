@@ -7,11 +7,25 @@ import (
 	"github.com/2Cheetah/car-price-validator/internal/visualiser"
 )
 
+type Handlers struct {
+	renderer Renderer
+}
+
+type Renderer interface {
+	RenderHTML(make string, model string, year string) ([]byte, error)
+}
+
 type PingResponse struct {
 	Pong int `json:"pong"`
 }
 
-func PingHandler(w http.ResponseWriter, r *http.Request) {
+func NewHandlers() *Handlers {
+	return &Handlers{
+		renderer: &visualiser.Visualiser{},
+	}
+}
+
+func (h *Handlers) PingHandler(w http.ResponseWriter, r *http.Request) {
 	queryParams := r.URL.Query()
 	if len(queryParams) != 0 {
 		http.Error(w, "no query params allowed", http.StatusBadRequest)
@@ -22,7 +36,7 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func BarsHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) BarsHandler(w http.ResponseWriter, r *http.Request) {
 	queryParams := r.URL.Query()
 	if !queryParams.Has("make") {
 		http.Error(w, "missing 'make' query param", http.StatusBadRequest)
@@ -42,9 +56,10 @@ func BarsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	year := queryParams.Get("year")
 
-	content, err := visualiser.RenderHTML(make, model, year)
+	content, err := h.renderer.RenderHTML(make, model, year)
 	if err != nil {
 		http.Error(w, "couldn't render bars", http.StatusInternalServerError)
+		return
 	}
 	w.Write(content)
 }
