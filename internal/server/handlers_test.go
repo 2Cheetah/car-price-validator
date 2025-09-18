@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,8 +14,9 @@ func TestPingHandler(t *testing.T) {
 	// Arrange
 	assert := assert.New(t)
 
+	h := Handlers{}
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /ping", PingHandler)
+	mux.HandleFunc("GET /ping", h.PingHandler)
 	respRecorder := httptest.NewRecorder()
 	req, err := http.NewRequest(http.MethodGet, "/ping", nil)
 	if err != nil {
@@ -37,66 +39,68 @@ func TestPingHandler(t *testing.T) {
 	}
 }
 
-// func TestBarsHandler(t *testing.T) {
-// 	h := NewHandlers(nil)
-// 	mux := http.NewServeMux()
-// 	mux.HandleFunc("GET /bars", h.BarsHandler)
+func TestBarsHandler(t *testing.T) {
+	assert := assert.New(t)
 
-// 	tests := []struct {
-// 		name           string
-// 		make           string
-// 		model          string
-// 		year           string
-// 		expectedStatus int
-// 	}{
-// 		{
-// 			name:           "success /bars?make=volkswagen&model=passat&year=2019",
-// 			make:           "volkswagen",
-// 			model:          "passat",
-// 			year:           "2019",
-// 			expectedStatus: http.StatusOK,
-// 		},
-// 		{
-// 			name:           "empty make /bars?make=&model=passat&year=2019",
-// 			make:           "",
-// 			model:          "passat",
-// 			year:           "2019",
-// 			expectedStatus: http.StatusBadRequest,
-// 		},
-// 		{
-// 			name:           "missing make /bars?model=passat&year=2019",
-// 			model:          "passat",
-// 			year:           "2019",
-// 			expectedStatus: http.StatusBadRequest,
-// 		},
-// 	}
+	mockRenderer := NewMockRenderer(t)
+	h := Handlers{renderer: mockRenderer}
+	mockRenderer.EXPECT().RenderHTML("volkswagen", "passat", "2019").Return([]byte("ok"), nil)
 
-// 	for _, test := range tests {
-// 		t.Run(test.name, func(t *testing.T) {
-// 			respRec := httptest.NewRecorder()
+	tests := []struct {
+		name      string
+		make      string
+		model     string
+		year      string
+		status    int
+		body      []byte
+		wantError bool
+	}{
+		{
+			name:   "successful request",
+			make:   "volkswagen",
+			model:  "passat",
+			year:   "2019",
+			status: http.StatusOK,
+			body:   []byte("ok"),
+		},
+		{
+			name:   "unsuccessful request",
+			make:   "",
+			model:  "passat",
+			year:   "2019",
+			status: http.StatusBadRequest,
+			body:   []byte("missing 'make' query param\n"),
+		},
+	}
 
-// 			queryParams := url.Values{}
-// 			if test.make != "" {
-// 				queryParams.Set("make", test.make)
-// 			}
-// 			if test.model != "" {
-// 				queryParams.Set("model", test.model)
-// 			}
-// 			if test.year != "" {
-// 				queryParams.Set("year", test.year)
-// 			}
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /bars", h.BarsHandler)
 
-// 			req, err := http.NewRequest(http.MethodGet, "/bars", nil)
-// 			if err != nil {
-// 				t.Fatalf("couldn't create a GET request to /bars endpoint, error: %v+", err)
-// 			}
-// 			req.URL.RawQuery = queryParams.Encode()
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			rR := httptest.NewRecorder()
+			baseURL := "/bars"
+			queryParams := url.Values{}
+			if test.make != "" {
+				queryParams.Set("make", test.make)
+			}
+			if test.model != "" {
+				queryParams.Set("model", test.model)
+			}
+			if test.year != "" {
+				queryParams.Set("year", test.year)
+			}
+			req, err := http.NewRequest(http.MethodGet, baseURL, nil)
+			if err != nil {
+				t.Errorf("couldn't create http request to /bars, error: %v", err)
+			}
+			req.URL.RawQuery = queryParams.Encode()
 
-// 			mux.ServeHTTP(respRec, req)
+			mux.ServeHTTP(rR, req)
 
-// 			if respRec.Code != test.expectedStatus {
-// 				t.Errorf("expected status: %d, got status: %d", test.expectedStatus, respRec.Code)
-// 			}
-// 		})
-// 	}
-// }
+			assert.Equal(test.status, rR.Code, "http response status correct")
+			assert.Equal(test.body, rR.Body.Bytes(), "response body correct")
+
+		})
+	}
+}
