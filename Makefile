@@ -11,7 +11,7 @@ run: vet
 	go run cmd/main.go
 
 test: fmt vet
-	go test ./...
+	go test -v ./...
 
 build: test
 	go build -o ./car-price-validator ./cmd/main.go
