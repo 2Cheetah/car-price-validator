@@ -1,0 +1,3 @@
+services:
+  car-price-validator:
+    env_file: .env.dev

@@ -21,9 +21,28 @@ func main() {
 }
 
 func MustLoadEnv() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("couldn't load env variables from .env file")
+	requiredEnvs := []string{"BASE_URL", "URL_PATH", "ORIGIN", "REFERER"}
+
+	if hasAllRequiredEnvs(requiredEnvs) {
+		return
 	}
+
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("env variables not found and couldn't be loaded from .env file: %v", err)
+	}
+
+	if !hasAllRequiredEnvs(requiredEnvs) {
+		log.Fatal("some of the required envs are still missing even after loading .env file")
+	}
+}
+
+func hasAllRequiredEnvs(requiredEnvs []string) bool {
+	for _, env := range requiredEnvs {
+		if _, exists := os.LookupEnv(env); !exists {
+			return false
+		}
+	}
+	return true
 }
 
 func SetupLogger() {
