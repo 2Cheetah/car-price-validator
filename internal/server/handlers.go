@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
 
 	"github.com/2Cheetah/car-price-validator/internal/visualiser"
@@ -58,6 +59,7 @@ func (h *Handlers) BarsHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, err := h.renderer.RenderHTML(make, model, year)
 	if err != nil {
+		slog.Error("error while trying to render bars", "error", err)
 		http.Error(w, "couldn't render bars", http.StatusInternalServerError)
 		return
 	}

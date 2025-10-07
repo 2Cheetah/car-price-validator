@@ -7,7 +7,7 @@ fmt:
 vet: fmt
 	go vet ./...
 
-run: vet
+run: test
 	go run cmd/main.go
 
 test: fmt vet
