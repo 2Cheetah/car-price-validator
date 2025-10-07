@@ -64,7 +64,7 @@ func ReadData(path string) (Data, error) {
 }
 
 func GetCarMakes() ([]string, error) {
-	data, err := ReadData("./.temp/filters.json")
+	data, err := ReadData("filters.json")
 	if err != nil {
 		return nil, fmt.Errorf("couldn't get data, error: %w", err)
 	}
@@ -87,7 +87,7 @@ func GetCarMakesData(data Data) map[string]string {
 }
 
 func GetCarModelsByMake(makeName string) ([]string, error) {
-	data, err := ReadData("./.temp/filters.json")
+	data, err := ReadData("filters.json")
 	if err != nil {
 		return nil, fmt.Errorf("couldn't get data, error: %w", err)
 	}
@@ -115,7 +115,7 @@ func GetCarModelsByMake(makeName string) ([]string, error) {
 }
 
 func GetMakeIDbyMakeName(makeName string) (string, error) {
-	data, err := ReadData("./.temp/filters.json")
+	data, err := ReadData("filters.json")
 	if err != nil {
 		return "", fmt.Errorf("couldn't get data, error: %w", err)
 	}
@@ -130,7 +130,7 @@ func GetMakeIDbyMakeName(makeName string) (string, error) {
 }
 
 func GetModelIDbyModelName(makeName string, modelName string) (string, error) {
-	data, err := ReadData("./.temp/filters.json")
+	data, err := ReadData("filters.json")
 	if err != nil {
 		return "", fmt.Errorf("couldn't get data, error: %w", err)
 	}
