@@ -17,19 +17,19 @@ build: test
 	go build -o ./car-price-validator ./cmd/main.go
 
 dev-build:
-	docker compose -f docker-compose.yaml -f docker-compose.override.yaml build
+	docker compose -f compose.yaml -f compose.override.yaml build
 
 dev-up:
-	docker compose -f docker-compose.yaml -f docker-compose.override.yaml up
+	docker compose -f compose.yaml -f compose.override.yaml up
 
 dev-down:
-	docker compose -f docker-compose.yaml -f docker-compose.override.yaml down
+	docker compose -f compose.yaml -f compose.override.yaml down
 
 prod-build:
-	docker compose -f docker-compose.yaml build
+	docker compose -f compose.yaml build
 
 prod-up:
-	docker compose -f docker-compose.yaml up
+	docker compose -f compose.yaml up
 
 prod-down:
-	docker compose -f docker-compose.yaml down
+	docker compose -f compose.yaml down

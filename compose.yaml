@@ -2,5 +2,5 @@ services:
   car-price-validator:
     build: .
     ports:
-      - "8080:8080"
+      - "54321:54321"
     env_file: .env

@@ -20,10 +20,14 @@ type Server struct {
 func NewServer() Server {
 	mux := http.NewServeMux()
 	handlers := NewHandlers()
+	port, ok := os.LookupEnv("PORT")
+	if !ok {
+		port = "8080"
+	}
 	return Server{
 		Mux: mux,
 		Server: &http.Server{
-			Addr:    ":8080",
+			Addr:    ":" + port,
 			Handler: mux,
 		},
 		Handlers: handlers,
