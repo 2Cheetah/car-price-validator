@@ -1,6 +1,6 @@
 services:
   car-price-validator:
-    build: .
+    image: "2cheetah/car-price-validator:latest"
     ports:
-      - "54321:54321"
+      - "8081:8081"
     env_file: .env

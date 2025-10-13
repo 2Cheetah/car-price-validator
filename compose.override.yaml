@@ -1,3 +1,4 @@
 services:
   car-price-validator:
+    build: .
     env_file: .env.dev
